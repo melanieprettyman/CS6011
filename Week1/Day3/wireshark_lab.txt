@@ -1,0 +1,50 @@
+﻿Wireshark_lab
+
+
+
+
+Step 2 Ping
+
+
+1. My IPv4 address:127.0.0.1
+IPv6 address:1 prefixlen 128 
+2. My partners ip address is 127.0.0.1
+Source Address: 10.17.212.167
+Destination Address: 172.20.120.20
+
+
+3. The integer values are the hex numbers and the terminal is the ASCII values 
+
+
+4. How long does it take a ping packet to travel to your classmate's machine and back? 
+0.121 ms
+Try ping google.com. How long does it take these ping packets to travel?
+6.714 ms
+Try ping www.louvre.fr. How long does this take? 
+148.991 ms
+
+
+What do these numbers tell you?
+The further away the IP address the longer it takes 
+
+
+Step 3 HTTP
+
+
+1. Did you see more than you expected in the output?
+Yes.
+2. Can you figure out what other data was sent/received?
+My address and the servers address 
+3. What is the purpose of the curl program? 
+Curl is a tool for transferring data from or to a server. It supports
+4. How are your results different / similar?
+Results are different in that there are more packages and now there are TCP and HTTP packages. 
+Results are similar in that they still have TCP packages. 
+5. What URL actually show's up when GitHub is loaded? 
+github.com
+6. Can you understand the output from Wireshark? 
+No, too many packages 
+
+
+7. Why can you only read the first couple of messages?
+        It’s overloaded
