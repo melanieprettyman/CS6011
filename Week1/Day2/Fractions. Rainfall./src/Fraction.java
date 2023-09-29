@@ -2,7 +2,7 @@ public class Fraction {
 
 //VARIABLES
     private long _numerator, _denominator;
-    private long _gcd;
+    private long _gcd; //not needed in many functions so should not be declared in the class
 
 
 
@@ -41,7 +41,9 @@ public class Fraction {
     //CONSTRUCTOR
     public Fraction( int numerator, int denominator){
         //protecting program in case someone could make the dem 0, which would crash our program
-        if ((denominator == 0)) throw new AssertionError();
+        if ((denominator == 0)){
+            throw new ArithmeticException("Exception: Cannot divide by zero");
+        }
 
         _numerator = numerator;
         _denominator = denominator;
@@ -136,6 +138,7 @@ public Fraction plus( Fraction rhs){
 
         //making a new fraction object, so pass out new values into the fraction constructor to update all of our
         //properties
+        //could have just swapped in the constructor (_den,_num)
         new Fraction((int) _numerator, (int) _denominator);
     }
 
@@ -168,6 +171,8 @@ public Fraction plus( Fraction rhs){
     // TO-STRING
     //String toString() - Returns a string representing this fraction. The string should have the format: "N/D",
     // where N is the numerator, and D is the denominator.
+    //System.out calls built in method toString when printing
+    //overloading method toString
     public String toString() {
         //Concatenating with a string between two variables will convert the whole line to string
         return _numerator + "/" + _denominator;

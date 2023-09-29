@@ -13,6 +13,12 @@ class FractionTest {
         //Assertions.assertEquals(3,3); // Dummy assert... put real code here.
     }
 
+    //more intensive testing
+    //-if user inputs o for den
+    //-swapping 0/1, will it know to reject
+    //bigger numbers
+
+
     //Test (*) and toString()
     @Test
     public void testTimes() {
@@ -64,6 +70,18 @@ class FractionTest {
 
 
     }
+
+    @Test
+    public void testThrowException(){
+        try {
+            Fraction f1 = new Fraction(1,0);
+
+        }
+        catch (ArithmeticException e){
+            System.out.println("Exception happened" + e.getMessage());
+        }
+    }
+
 
 
 }

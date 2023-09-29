@@ -33,10 +33,14 @@ public class Main {
                     // Read the next line of input from the client socket.
                     String input = scanner.nextLine();
 
+
+
                     // Split the input string using space as a delimiter to separate elements.
                     // expecting an HTTP request, and we're interested in the second element,
                     // which is the requested filename.
+                    String regexPattern = "^/+";
                     filename = input.split(" ")[1];
+                    filename = filename.replaceAll(regexPattern, "");
                 }
 
 
@@ -46,7 +50,8 @@ public class Main {
                 //HEADERS *most needed to make things work*
 
                 //Opening the file
-                File file = new File("/Users/melanieprettyman/Desktop/MSD/CS6011/CS6011/Week1/Day1" + filename);
+                //relative path, bc its using current director, don't need '/', if included, wont find file
+                File file = new File(filename);
 
 
                 //FILE EXTENSION
@@ -59,8 +64,6 @@ public class Main {
                     // Extract the substring after the last dot, which represents the file extension
                     extension = filename.substring(i + 1);
                     // Print the extracted file extension to the console for debugging
-                    System.out.println(extension);
-
                 }
 
                 //READ REQUESTED FILE
