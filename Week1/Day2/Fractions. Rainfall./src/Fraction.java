@@ -1,4 +1,4 @@
-public class Fraction {
+public class Fraction implements Comparable<Fraction>{
 
 //VARIABLES
     private long _numerator, _denominator;
@@ -179,8 +179,19 @@ public Fraction plus( Fraction rhs){
     }
 
 
+    @Override
+    public int compareTo(Fraction rhs) {
 
-
+        //lhs bigger
+        if((minus(rhs).toDouble()>=0)){
+            return 1;
+        }
+        //lsh smaller
+        else if(minus(rhs).toDouble()<=0){
+            return -1;
+        }
+        return 0;
+    }
 }
 
 //    private void computeQRR(){

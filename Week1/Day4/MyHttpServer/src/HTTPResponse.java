@@ -63,10 +63,7 @@ public class HTTPResponse {
                     outputStream.write("HTTP/1.1 200 OK\n".getBytes());
                     outputStream.write("Content-type: image/jpeg\n".getBytes());
                 }
-                case "mp3" -> {
-                    outputStream.write("HTTP/1.1 200 OK\n".getBytes());
-                    outputStream.write("Content-type: audio/mpeg\n".getBytes());
-                }
+
             }
 
                     // Add an empty line to separate headers from the content

@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Assertions;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 class FractionTest {
 
     @Test
@@ -80,6 +83,19 @@ class FractionTest {
         catch (ArithmeticException e){
             System.out.println("Exception happened" + e.getMessage());
         }
+    }
+
+    @Test
+public void testCompareTo(){
+        ArrayList<Fraction> a1=new ArrayList<Fraction>();
+
+        a1.add(new Fraction(2,4));
+        a1.add(new Fraction(1,4));
+        a1.add(new Fraction(3,4));
+
+
+        Collections.sort(a1);
+
     }
 
 
