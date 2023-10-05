@@ -14,7 +14,7 @@ public class SineWave implements AudioComponent{
 
     //CONSTRUCTOR
         //it takes in frequency and generate a sine wave and store it in the audioClip
-    SineWave(float frequency) {
+    public SineWave(float frequency) {
         frequency_ = frequency;
     }
 
@@ -34,7 +34,6 @@ public class SineWave implements AudioComponent{
         int maxValue = Short.MAX_VALUE;
 
         //generate the samples of the sine wave and store them in the audioClip
-        //calculates half of the length of the audio data array because each sample is represented by two bytes (16 bits).
         for (int i = 0; i < AudioClip.TOTAL_SAMPLES; i++) {
             int sampleValue = (int) ( maxValue * ( Math.sin (2 * Math.PI * frequency_ * i/sampleRate) ) );
             //Call setSample and store the sampleValue at the current position i in the audio data array.

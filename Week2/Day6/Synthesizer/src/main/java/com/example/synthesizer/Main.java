@@ -15,35 +15,61 @@ public class Main {
 // This is the format that we're following, 44.1 KHz mono audio, 16 bits per sample.
         AudioFormat format16 = new AudioFormat( 44100, 16, 1, true, false );
 
-    //------PART5-------
+        //===============================================================================//
+        /*                            GENERATE WAVES                                     */
+        //===============================================================================//
 
+        //-----MIXER WAVES------
         AudioComponent gen = new SineWave(440); // Your code
-        AudioComponent gen2 = new SineWave(220); // Your code
+        AudioComponent gen2 = new SineWave(200); // Your code
 
-    //-----PART4----
-        //CREATE VOLUME ADJUSTER
+
+        //-----VOLUME ADJUSTER-----
         VolumeAdjuster lowerVolume = new VolumeAdjuster(.5);
         // Connect the sine wave as the input for your volume object
         lowerVolume.connectInput(gen);
         lowerVolume.connectInput(gen2);
 
-        //CREATE MIXER
+        //--------MIXER-------
         Mixer mixedWaves = new Mixer();
         mixedWaves.connectInput(gen);
         mixedWaves.connectInput(gen2);
+
+        //--------SQUARE WAVE---------
+        // Create a SquareWave object with a frequency of 440 Hz and a duration of 2 seconds
+        SquareWave squareWave = new SquareWave(440);
+
+        //--------VF SINE WAVE---------
+        // Create an instance of VFSineWave
+        VFSineWave vfsineWave = new VFSineWave();
+        // Create an instance of LinearRamp
+        LinearRamp linearRamp = new LinearRamp(50, 1000);
+        // Connect the LinearRamp as input to the VFSineWave
+        vfsineWave.connectInput(linearRamp);
+        // Get the audio clip from VFSineWave
+        //AudioClip clip = vfsineWave.getClip();
+
+                //~~~~~~~~~~~~~~~~~~~~~
+                /*   AUDIO-CLIP      */
+                //~~~~~~~~~~~~~~~~~~~~~
 
                 //SINE WAVE AUDIO-CLIP
                 //AudioClip clip = gen.getClip();
 
                 //VOLUME ADJUSTER AUDIO-CLIP
-                //Get the audio from your volume object and play it.
                 //AudioClip clip = lowerVolume.getClip();
 
-        //MIXER WAVE
-        //Get the audio from your mixer object and play it.
-        AudioClip clip = mixedWaves.getClip();
+                //SQUARE WAVE AUDIO-CLIP
+                //AudioClip clip = squareWave.getClip();
 
-        //-----------
+                //MIXER WAVE
+                //AudioClip clip = mixedWaves.getClip();
+
+                //VF SINE WAVE
+                AudioClip clip = vfsineWave.getClip();
+
+
+        //===============================================================================//
 
         c.open( format16, clip.getData(), 0, clip.getData().length ); // Reads data from our byte array to play it.
 

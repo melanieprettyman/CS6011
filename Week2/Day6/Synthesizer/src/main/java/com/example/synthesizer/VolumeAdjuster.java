@@ -19,7 +19,7 @@ public class VolumeAdjuster implements AudioComponent{
         AudioClip result = new AudioClip(); //= Some modification of the original clip.
 
         //Loop through total samples and modify the sound
-        for (int i = 0; i < AudioClip.TOTAL_SAMPLES; i++) {
+        for (int i = 0; i < original.TOTAL_SAMPLES; i++) {
             //Get the sample value from the original clip
             //Adjust the sample value by scaling it with the volumeScale (sample)
 
@@ -48,6 +48,7 @@ public class VolumeAdjuster implements AudioComponent{
     }
 
     @Override
+    // Connect a AudioComponent as the input to the VFSineWave
     public void connectInput(AudioComponent input) {
         input_ = input;
 

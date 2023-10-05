@@ -14,12 +14,11 @@ public class AudioClip {
      public byte[] audioClipArray;
 
     // Define the total number of samples
-        //multiply by 2 there are 2 bytes per sample, and the array stores each byte separately
     public static final int TOTAL_SAMPLES = ((int) (duration_ * sampleRate_));
 
     // Constructor to initialize the byte array
     public AudioClip() {
-        //multiply by 2 there are 2 bytes per sample, and the array stores each byte separately
+        //multiply by 2 there are 2 bytes per sample, and the array size should be the total number of bytes
         audioClipArray = new byte[TOTAL_SAMPLES *2];
     }
 
@@ -75,7 +74,7 @@ public class AudioClip {
     // We need this method because the Java library that actually plays sounds expects our
     // data as an array of bytes.
 
-    byte[] getData(){
+    public byte[] getData(){
         return Arrays.copyOf(audioClipArray, (TOTAL_SAMPLES *2));
     }
 
