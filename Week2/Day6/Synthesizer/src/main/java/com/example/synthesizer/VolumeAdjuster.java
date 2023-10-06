@@ -54,5 +54,9 @@ public class VolumeAdjuster implements AudioComponent{
 
     }
 
+    public void getVolumeScale(int volume){
+        volumeScale_=volume;
+    }
+
 
 }

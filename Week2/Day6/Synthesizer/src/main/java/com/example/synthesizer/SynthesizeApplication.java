@@ -1,70 +1,117 @@
 package com.example.synthesizer;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.LineUnavailableException;
+
+import javax.sound.sampled.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class SynthesizeApplication extends Application {
     private Clip c; // Declare a Clip field for audio playback
-    int slideFrequency = 0; // Store the slider frequency value
+    AnchorPane mainCenter;
+
+    public static ArrayList<AudioComponentWidgetBase> widgets_ = new ArrayList<>();
+    public static ArrayList<AudioComponentWidgetBase> connectedWidgets_ = new ArrayList<>();
+
+
+    public static Circle speaker;
+
 
     @Override
     public void start(Stage stage) {
+        // Create a layout using AnchPane
+        BorderPane mainLayout = new BorderPane();
+
         // Set the title of the application window
         stage.setTitle("Synthesizer");
 
-        // Create a slider to control the frequency
-        // Frequency range: 50 to 2000 Hz
-        // Step value for slider changes: 10
-        Slider frequencySlider = new Slider(50, 2000, 10);
+        String cssLayoutbot = "-fx-border-color: #000000;\n" +
+                "-fx-border-insets: 0;\n" +
+                "-fx-border-width: 3;\n" +
+                "-fx-border-style: line;\n";
 
-        // Create a play button
-        Button playButton = new Button("Play");
+        //----------RIGHT PANEL---------- (Wave Buttons/Vol Button and creating widgets)
+        //Create right panel
+        VBox rightPanel = new VBox();
+        //Create sineWave button
+        Button sinewaveButton = new Button("SineWave");
+        sinewaveButton.setStyle("-fx-font-family: 'Comic Sans MS'");
 
-        // Set an action for the play button, calling the handlePlayPress function
+        //Style right panel
+        rightPanel.setStyle(cssLayoutbot + "-fx-background-color: #b570e3");
+        rightPanel.setPadding(new Insets(4));
+        //Set sineWave button to create a sine-wave widget when clicked
+        sinewaveButton.setOnAction(this::creatWidget);
+
+        //Create volume button and set actions
+        Button volButton = new Button("Volume:");
+        volButton.setStyle("-fx-font-family: 'Comic Sans MS'");
+
+
+        volButton.setOnAction(e1 -> {
+            try {
+                createVolume(e1);
+            } catch (LineUnavailableException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        //Add buttons to the right panel
+        rightPanel.getChildren().addAll(sinewaveButton, volButton);
+
+
+        //----------CENTER  PANEL---------- (Speaker)
+        //Create center panel
+        mainCenter = new AnchorPane();
+        //Style center panel
+        mainCenter.setStyle("-fx-background-color: #e5a7e8");
+
+        //Create speaker
+        speaker = new Circle(400, 200, 15);
+        //Style speaker
+        speaker.setFill(Color.DARKBLUE);
+        //Add speaker to center panel
+        mainCenter.getChildren().add(speaker);
+
+
+        //----------BOTTOM  PANEL---------- (Play button)
+        //Create bottom panel
+        HBox bottomPanel = new HBox();
+        //Style bottom panel
+        bottomPanel.setStyle(cssLayoutbot + "-fx-background-color: #800062");
+
+        //Create play button
+        Button playButton = new Button("⫸");
+        bottomPanel.setAlignment(Pos.CENTER);
+        playButton.setStyle("-fx-background-color: rgba(241,141,188,0.03); -fx-text-fill: white; -fx-border-color: white; -fx-border-width: 2px; -fx-font-family: 'Comic Sans MS'");
+
+        //Add play button the bottom panel
+        bottomPanel.getChildren().add(playButton);
+        // Set an action for the play button, calling the playAudio function
         playButton.setOnAction(e -> {
             try {
-                // Call the handlePlayPress function with the current slider frequency
-                handlePlayPress(slideFrequency);
+                playAudio(e);
             } catch (LineUnavailableException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
-        // Create a label for displaying frequency information
-        Label frequenceLabel = new Label("Sinewave");
 
-        // Update the label when the slider is dragged
-        frequencySlider.setOnMouseDragged(e -> handleSlider(e, frequencySlider, frequenceLabel));
-
-        // Create a layout using AnchorPane
-        AnchorPane mainLayout = new AnchorPane();
-
-        // Create a VBox to hold frequency controls
-        VBox frequencyBox = new VBox(10);
-        // Position the frequency box in the middle of the screen
-        frequencyBox.relocate(500, 500);
-        // Set the frequency box with pink background
-        frequencyBox.setStyle("-fx-padding: 10; -fx-background-color: #cc8ace");
-
-        // Add the slider, label, and play button to the frequency box
-        frequencyBox.getChildren().addAll(frequenceLabel, frequencySlider, playButton);
-
-        // Add the frequency box to the AnchorPane
-        mainLayout.getChildren().add(frequencyBox);
+        //Add panels to main layout
+        mainLayout.setCenter(mainCenter);
+        mainLayout.setRight(rightPanel);
+        mainLayout.setBottom(bottomPanel);
 
         // Create a scene and set it on the stage
         Scene scene = new Scene(mainLayout, 1000, 1000);
@@ -73,52 +120,71 @@ public class SynthesizeApplication extends Application {
         stage.show();
     }
 
-    // Handle slider dragging event and update label
-    private void handleSlider(MouseEvent e, Slider frequencySlider, Label frequenceLabel) {
-        // Get the value of the frequency slider
-        int result = (int) frequencySlider.getValue();
-        // Update the label text with the selected frequency
-        frequenceLabel.setText("SineWave  " + result + " Hz");
-        // Update the slideFrequency field
-        slideFrequency = result;
+
+
+
+    //Creates a widget
+    private void creatWidget(ActionEvent e) {
+        int frequency = 50;
+        //Create audio component of type sineWave
+        AudioComponent sineWave = new SineWave(frequency);
+        //create widget that takes sineWave and mainCenter pane
+        AudioComponentWidgetBase acw = new AudioComponentWidgetBase(sineWave, mainCenter, "SineWave", 50, 2000, 10);
+        //Add widget to main
+        mainCenter.getChildren().add(acw);
+
+        //Add to widget array list
+        widgets_.add(acw);
     }
 
-    // Method to stop audio playback
-    private void stopPlayback() {
-        if (c != null && c.isRunning()) {
-            c.stop();
-            c.close();
+    private void createVolume(ActionEvent e) throws LineUnavailableException {
+        int volumeScale = 1;
+        VolumeAdjuster lowerVolume = null;
+        for (AudioComponentWidgetBase widget : connectedWidgets_) {
+            AudioComponent ac = widget.audioComponent_;
+
+            lowerVolume = new VolumeAdjuster(volumeScale);
+            // Connect the sine wave as the input for your volume object
+            lowerVolume.connectInput(ac);
+            // Create a widget that takes sineWave and mainCenter pane
         }
-    }
-
-    // Handle play button press event
-    private void handlePlayPress(int frequency) throws LineUnavailableException {
-        // Create a SquareWave generator with the selected frequency
-        AudioComponent gen = new SineWave(frequency);
-        // Generate an AudioClip
-        AudioClip clip = gen.getClip();
-
-        // Create a Clip for audio playback
-        Clip c = AudioSystem.getClip();
-        // Define the audio format
-        AudioFormat format16 = new AudioFormat(44100, 16, 1, true, false);
-
-        // Open the Clip with the audio data
-        c.open(format16, clip.getData(), 0, clip.getData().length);
-        // Start audio playback
-        c.start();
-
-        // Makes sure the program doesn't quit before the sound plays.
-        while (c.getFramePosition() < AudioClip.TOTAL_SAMPLES || c.isActive() || c.isRunning()) {
-            // Do nothing while waiting for the note to play.
+            VolumeAdjusterWidget acw = new VolumeAdjusterWidget(lowerVolume, mainCenter, "Volume", 0.5f, 2.0f, 1);
+            // Add widget to main
+            mainCenter.getChildren().add(acw);
+            // Add to widget array list
+            widgets_.add(acw);
         }
 
-        // Close the audio clip
-        c.close();
-    }
+        private void playAudio(ActionEvent e) throws LineUnavailableException {
+
+            // Create a Clip for audio playback
+            Clip c = AudioSystem.getClip();
+            // Define the audio format
+            AudioFormat format16 = new AudioFormat(44100, 16, 1, true, false);
+
+            //Mixer
+            Mixer mixer = new Mixer();
+            for (AudioComponentWidgetBase w : connectedWidgets_) {
+                AudioComponent ac = w.audioComponent_;
+                mixer.connectInput(ac);
+            }
+
+            AudioClip clip = mixer.getClip();
+            c.open(format16, clip.getData(), 0, clip.getData().length);
+
+            AudioListener listener = new AudioListener(c);
+
+            // Start audio playback
+            c.start();
+            //Line listener
+            c.addLineListener(listener);
+
+        }
+
 
     // The main entry point for the JavaFX application
-    public static void main(String[] args) {
+    public static void main (String[]args){
         launch();
     }
+
 }

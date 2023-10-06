@@ -1,6 +1,4 @@
 package com.example.synthesizer;
-import javax.sound.sampled.*;
-
 
 
 public class SineWave implements AudioComponent{
@@ -9,6 +7,7 @@ public class SineWave implements AudioComponent{
     //used to store the frequency of the sine wave
     public float frequency_;
     double sampleRate=44100;
+
 
     //used to hold the generated sine wave audio data
 
@@ -53,6 +52,15 @@ public class SineWave implements AudioComponent{
     // this method will just store a reference to the AudioComponent parameter.
     // If the component doesn't accept inputs, you can assert( false ) in here.
     public void connectInput(AudioComponent input) {
+        SineWave sn = (SineWave) input;
 
     }
+
+    public void updateFrequency(int frequency){
+        frequency_=frequency;
+    }
+
+
+
+
 }
