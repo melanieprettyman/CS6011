@@ -40,4 +40,5 @@ public class VFSineWave implements AudioComponent {
         input_ = input;
     }
 
+
 }

@@ -12,8 +12,6 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 import javax.sound.sampled.*;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -24,72 +22,80 @@ public class SynthesizeApplication extends Application {
     public static ArrayList<AudioComponentWidgetBase> widgets_ = new ArrayList<>();
     public static ArrayList<AudioComponentWidgetBase> connectedWidgets_ = new ArrayList<>();
 
-
     public static Circle speaker;
+
+    public static VolumeAdjusterWidget acw;
+    public static VolumeAdjuster changeVolume;
 
 
     @Override
     public void start(Stage stage) {
-        // Create a layout using AnchPane
+        // Create a layout using AnchorPane
         BorderPane mainLayout = new BorderPane();
 
         // Set the title of the application window
         stage.setTitle("Synthesizer");
 
-        String cssLayoutbot = "-fx-border-color: #000000;\n" +
+        // CSS styles for layout and right panel
+        String cssLayoutbot = "-fx-border-color: white;\n" +
                 "-fx-border-insets: 0;\n" +
                 "-fx-border-width: 3;\n" +
                 "-fx-border-style: line;\n";
 
-        //----------RIGHT PANEL---------- (Wave Buttons/Vol Button and creating widgets)
+        String cssRightPanel = "-fx-font-family: 'Comic Sans MS';-fx-background-color: #FCC7EB ; -fx-border-color: white; -fx-border-width: 2px;-fx-text-fill: #9B55E0";
+
+        //----------RIGHT PANEL-------------------------------------------------- (Wave Buttons/creating widgets)
         //Create right panel
         VBox rightPanel = new VBox();
-        //Create sineWave button
-        Button sinewaveButton = new Button("SineWave");
-        sinewaveButton.setStyle("-fx-font-family: 'Comic Sans MS'");
 
         //Style right panel
-        rightPanel.setStyle(cssLayoutbot + "-fx-background-color: #b570e3");
+        rightPanel.setStyle(cssLayoutbot + "-fx-background-color: #A478CF");
         rightPanel.setPadding(new Insets(4));
+
+        //SINE-WAVE BUTTON
+        Button sinewaveButton = new Button("SineWave");
+        sinewaveButton.setStyle(cssRightPanel);
         //Set sineWave button to create a sine-wave widget when clicked
-        sinewaveButton.setOnAction(this::creatWidget);
+        sinewaveButton.setOnAction(this::createWidget);
 
-        //Create volume button and set actions
-        Button volButton = new Button("Volume:");
-        volButton.setStyle("-fx-font-family: 'Comic Sans MS'");
+        //SQUARE-WAVE BUTTON
+        Button squareButton = new Button("SquareWave");
+        squareButton.setStyle(cssRightPanel);
+        //Set squareButton to create a sine-wave widget when clicked
+        squareButton.setOnAction(this::squareWaveWidget);
 
+        //VF-SINE-WAVE BUTTON
+        Button VFSineWaveButton = new Button("VF-SineWave");
+        VFSineWaveButton.setStyle(cssRightPanel);
+        //Set VFSineWaveButton to create a sine-wave widget when clicked
+        VFSineWaveButton.setOnAction(this::VFSineWaveWidget);
 
-        volButton.setOnAction(e1 -> {
-            try {
-                createVolume(e1);
-            } catch (LineUnavailableException e) {
-                throw new RuntimeException(e);
-            }
-        });
 
         //Add buttons to the right panel
-        rightPanel.getChildren().addAll(sinewaveButton, volButton);
+        rightPanel.getChildren().addAll(sinewaveButton, squareButton, VFSineWaveButton);
+        rightPanel.setPadding(new Insets(5));
+        rightPanel.setSpacing(5);
 
-
-        //----------CENTER  PANEL---------- (Speaker)
+        //----------CENTER  PANEL------------------------------------------------------- (Speaker and volume widget)
         //Create center panel
         mainCenter = new AnchorPane();
         //Style center panel
-        mainCenter.setStyle("-fx-background-color: #e5a7e8");
+        mainCenter.setStyle("-fx-background-color: #FEE3FF");
 
         //Create speaker
         speaker = new Circle(400, 200, 15);
         //Style speaker
-        speaker.setFill(Color.DARKBLUE);
+        speaker.setFill(Color.BLACK);
         //Add speaker to center panel
         mainCenter.getChildren().add(speaker);
+        createVolume();
 
 
-        //----------BOTTOM  PANEL---------- (Play button)
+        //----------BOTTOM  PANEL------------------------------------------------------(Play button)
         //Create bottom panel
         HBox bottomPanel = new HBox();
         //Style bottom panel
-        bottomPanel.setStyle(cssLayoutbot + "-fx-background-color: #800062");
+        bottomPanel.setStyle(cssLayoutbot + "-fx-background-color: #F08BCB");
 
         //Create play button
         Button playButton = new Button("⫸");
@@ -108,6 +114,7 @@ public class SynthesizeApplication extends Application {
         });
 
 
+        //----------COMBINE-PANELS-----------
         //Add panels to main layout
         mainLayout.setCenter(mainCenter);
         mainLayout.setRight(rightPanel);
@@ -120,66 +127,95 @@ public class SynthesizeApplication extends Application {
         stage.show();
     }
 
+    // Create a VFSineWave widget when the corresponding button is clicked
+    private void VFSineWaveWidget(ActionEvent actionEvent) {
+        // Create an instance of VFSineWave
+        VFSineWave vfsineWave = new VFSineWave();
+        // Create an instance of LinearRamp
+        LinearRamp linearRamp = new LinearRamp(50, 1000);
+        // Connect the LinearRamp as input to the VFSineWave
+        vfsineWave.connectInput(linearRamp);
 
-
-
-    //Creates a widget
-    private void creatWidget(ActionEvent e) {
-        int frequency = 50;
-        //Create audio component of type sineWave
-        AudioComponent sineWave = new SineWave(frequency);
-        //create widget that takes sineWave and mainCenter pane
-        AudioComponentWidgetBase acw = new AudioComponentWidgetBase(sineWave, mainCenter, "SineWave", 50, 2000, 10);
-        //Add widget to main
+        // Create a VFSineWaveWidget and add it to the mainCenter pane
+        VFSineWaveWidget acw = new VFSineWaveWidget(vfsineWave, mainCenter, "VF-SineWave", 0, 0, 0);
         mainCenter.getChildren().add(acw);
 
-        //Add to widget array list
+        // Add the widget to the widgets array list
         widgets_.add(acw);
     }
 
-    private void createVolume(ActionEvent e) throws LineUnavailableException {
-        int volumeScale = 1;
-        VolumeAdjuster lowerVolume = null;
-        for (AudioComponentWidgetBase widget : connectedWidgets_) {
-            AudioComponent ac = widget.audioComponent_;
+    // Creates a SineWave widget when the corresponding button is clicked
+    private void createWidget(ActionEvent e) {
+        int frequency = 50;
+        // Create an audio component of type SineWave
+        AudioComponent sineWave = new SineWave(frequency);
+        // Create a widget that takes the SineWave and mainCenter pane
+        AudioComponentWidgetBase acw = new AudioComponentWidgetBase(sineWave, mainCenter, "SineWave", 50, 2000, 10);
+        mainCenter.getChildren().add(acw);
 
-            lowerVolume = new VolumeAdjuster(volumeScale);
-            // Connect the sine wave as the input for your volume object
-            lowerVolume.connectInput(ac);
-            // Create a widget that takes sineWave and mainCenter pane
+        // Add the widget to the widgets array list
+        widgets_.add(acw);
+    }
+
+    // Creates a SquareWave widget when the corresponding button is clicked
+    private void squareWaveWidget(ActionEvent e) {
+        int frequency = 50;
+        // Create an audio component of type SquareWave
+        AudioComponent squareWave = new SquareWave(frequency);
+        // Create a widget that takes the SquareWave and mainCenter pane
+        SquareWaveWidget acw = new SquareWaveWidget(squareWave, mainCenter, "SquareWave", 50, 2000, 10);
+        mainCenter.getChildren().add(acw);
+
+        // Add the widget to the widgets array list
+        widgets_.add(acw);
+    }
+
+    // Creates a volume adjustment widget
+    private void createVolume() {
+        // Create a VolumeAdjusterWidget
+        acw = new VolumeAdjusterWidget(changeVolume, mainCenter, "Volume", 0.0f, 10f, 1);
+        // Add the widget to the mainCenter pane
+        mainCenter.getChildren().add(acw);
+    }
+
+    // Play audio when the play button is clicked
+    private void playAudio(ActionEvent e) throws LineUnavailableException {
+        // Create a Clip for audio playback
+        Clip c = AudioSystem.getClip();
+        // Define the audio format
+        AudioFormat format16 = new AudioFormat(44100, 16, 1, true, false);
+
+        // Create a Mixer to mix audio from connected widgets
+        Mixer mixer = new Mixer();
+        for (AudioComponentWidgetBase w : connectedWidgets_) {
+            AudioComponent ac = w.audioComponent_;
+            mixer.connectInput(ac);
         }
-            VolumeAdjusterWidget acw = new VolumeAdjusterWidget(lowerVolume, mainCenter, "Volume", 0.5f, 2.0f, 1);
-            // Add widget to main
-            mainCenter.getChildren().add(acw);
-            // Add to widget array list
-            widgets_.add(acw);
-        }
 
-        private void playAudio(ActionEvent e) throws LineUnavailableException {
+        // Get the volume scale from the slider
+        double volumeScale = acw.slider_.getValue();
 
-            // Create a Clip for audio playback
-            Clip c = AudioSystem.getClip();
-            // Define the audio format
-            AudioFormat format16 = new AudioFormat(44100, 16, 1, true, false);
+        // Create a VolumeAdjuster and connect it to the mixer
+        VolumeAdjuster volumeAdjuster = new VolumeAdjuster(volumeScale);
+        volumeAdjuster.connectInput(mixer);
 
-            //Mixer
-            Mixer mixer = new Mixer();
-            for (AudioComponentWidgetBase w : connectedWidgets_) {
-                AudioComponent ac = w.audioComponent_;
-                mixer.connectInput(ac);
-            }
+        // Get the audio clip from the volume adjuster
+        AudioClip clip = volumeAdjuster.getClip();
 
-            AudioClip clip = mixer.getClip();
-            c.open(format16, clip.getData(), 0, clip.getData().length);
+        // Open the Clip with the audio format and clip data
+        c.open(format16, clip.getData(), 0, clip.getData().length);
 
-            AudioListener listener = new AudioListener(c);
+        // Create an AudioListener for the Clip
+        AudioListener listener = new AudioListener(c);
 
-            // Start audio playback
-            c.start();
-            //Line listener
-            c.addLineListener(listener);
+        // Start audio playback
+        c.start();
 
-        }
+        // Add a line listener to the Clip
+        c.addLineListener(listener);
+    }
+
+
 
 
     // The main entry point for the JavaFX application

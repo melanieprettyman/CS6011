@@ -21,72 +21,90 @@ public class AudioComponentWidgetBase extends Pane {
     AudioComponent audioComponent_;
     AnchorPane parent_;
 
-    Slider frequencySLider_;
+    Slider slider_;
 
-    Label frequenceLabel_;
+    static Label frequenceLabel_;
 
     double mouseXpos, mouseYpos, widgetXpos, widgetYpos;
 
     Line line_;
 
-    //constructor
+    HBox baseLayout;
+
+    VBox rightSide;
+
+    VBox leftSide;
+
+
+    // Constructor for AudioComponentWidgetBase
+    // Parameters:
+    // - audioComponent: The audio component for this widget
+    // - pane: The parent AnchorPane where this widget will be placed
+    // - sliderLabel: The label text for the slider (e.g., "Frequency" or "Volume")
+    // - lowerRange: The lower range value for the slider
+    // - upperRange: The upper range value for the slider
+    // - sliderValue: The initial value of the slider
     AudioComponentWidgetBase(AudioComponent audioComponent, AnchorPane pane, String sliderLabel, float lowerRange, float upperRange, int sliderValue){
-        //pass audio competent and pane
-        audioComponent_ =audioComponent;
-        parent_ =pane;
+        // Initialize references to the audio component and parent pane
+        audioComponent_ = audioComponent;
+        parent_ = pane;
 
-    //HBOX to combine LEFT-SIDE AND RIGHT-SIDE
-        HBox baseLayout = new HBox();
-        baseLayout.setStyle("-fx-border-color: black; -fx-background-color: WHITE");
+//BASE-BOX
+        // Create an HBox to combine left and right sides of the widget
+        baseLayout = new HBox();
 
-    //VBOX FOR THE RIGHT SIDE BOX (CLOSE BUTTON and circle-OUTPUT)
-        VBox rightSide = new VBox();
-        //create button, set actions, add style
+        // Apply styles to the base-layout box
+        String cssPanel = "-fx-background-color: #F4BBFE ; -fx-border-color: white; -fx-border-width: 2px;";
+        baseLayout.setStyle(cssPanel);
+
+//RIGHT-SIDE BOX
+        // Create a VBox for the right side box containing close button and circle-output
+        rightSide = new VBox();
+
+        // Create a close button and set an action for it
         Button closeBtn = new Button("x");
-        closeBtn.setStyle("-fx-font-family: 'Comic Sans MS'");
+        closeBtn.setStyle("-fx-font-family: 'Comic Sans MS';-fx-border-color: white; -fx-border-width: 2px;");
         closeBtn.setOnAction(this::closeWidget);
-        //create output circle
+
+        // Create an output circle
         Circle output = new Circle(10);
         output.setFill(Color.BLACK);
 
-        //Handel drawing the line - 3 event
+        // Handle events for drawing connection lines (mouse events)
         output.setOnMousePressed(e->startConnection(e,output));
         output.setOnMouseDragged(e->moveConnection(e, output));
         output.setOnMouseReleased(e->endConnection(e,output));
 
 
-                //add close button and output circle to the right-side
+                // Add the close button and output circle to the right-side box
                 rightSide.getChildren().add(closeBtn);
                 rightSide.getChildren().add(output);
-                //right side box style
+                // Style the right side box
                 rightSide.setAlignment(Pos.CENTER);
                 rightSide.setPadding(new Insets(5));
                 rightSide.setSpacing(5);
 
 
 
-            //CREATE SLIDER
-                // Create a slider to control the frequency
-                // Range: 50 to 2000 Hz
-                // Step value for slider changes: 10
-        frequencySLider_ = new Slider(lowerRange, upperRange, sliderValue);
+        // Create a slider to control the parameter (e.g., frequency or volume)
+        slider_ = new Slider(lowerRange, upperRange, sliderValue);
 
-
-
-        VBox leftSide = new VBox();
-        //Create label
+//LEFT-SIDE BOX
+        // Create a VBox for the left side box containing labels and sliders
+        leftSide = new VBox();
+        // Create a label for displaying the parameter label (e.g., "Frequency" or "Volume")
         frequenceLabel_ = new Label(sliderLabel);
-        frequenceLabel_.setStyle("-fx-font-family: 'Comic Sans MS'");
+        frequenceLabel_.setStyle("-fx-font-family: 'Comic Sans MS';-fx-text-fill: #9B55E0");
 
-        //Add slider and label to left side
-        leftSide.getChildren().addAll(frequenceLabel_,frequencySLider_);
+        // Add the label and slider to the left side box
+        leftSide.getChildren().addAll(frequenceLabel_, slider_);
 
-        //Update postion when dragged
+        // Update positions during drag-and-drop
         leftSide.setOnMousePressed(this::getPosinf);
         leftSide.setOnMouseDragged(this::moveWidget);
 
-        //Handel Slider
-        frequencySLider_.setOnMouseDragged(this::handleSlider);
+        // Handle slider dragging events
+        slider_.setOnMouseDragged(this::handleSlider);
 
         //Add RIGHT-SIDE TO LEFT-SIDE to base layout
         baseLayout.getChildren().add(leftSide);
@@ -101,7 +119,9 @@ public class AudioComponentWidgetBase extends Pane {
 
     }
 
-    private void endConnection(MouseEvent e, Circle output) {
+
+
+    protected void endConnection(MouseEvent e, Circle output) {
         Circle speaker = SynthesizeApplication.speaker;
         Bounds speakerBounds = speaker.localToScene(speaker.getBoundsInLocal());
 
@@ -120,13 +140,13 @@ public class AudioComponentWidgetBase extends Pane {
                 }
     }
 
-    private void moveConnection(MouseEvent e, Circle output) {
+    protected void moveConnection(MouseEvent e, Circle output) {
         Bounds parentBounds = parent_.getBoundsInParent();
         line_.setEndX(e.getSceneX()-parentBounds.getMinX());
         line_.setEndY(e.getSceneY()-parentBounds.getMinY());
     }
 
-    private void startConnection(MouseEvent e, Circle output) {
+    protected void startConnection(MouseEvent e, Circle output) {
 
         if(line_ != null){
             parent_.getChildren().remove(line_);
@@ -148,15 +168,14 @@ public class AudioComponentWidgetBase extends Pane {
 
     }
 
-    private void moveWidget(MouseEvent e) {
+    protected void moveWidget(MouseEvent e) {
         double deltaX = e.getSceneX() - mouseXpos;
         double deltaY = e.getSceneY() - mouseYpos;
 
         this.relocate(deltaX + widgetXpos, deltaY + widgetYpos);
-            //this.relocate(e.getSceneX(), e.getScene())
     }
 
-    private void getPosinf(MouseEvent e) {
+    protected void getPosinf(MouseEvent e) {
         mouseXpos = e.getSceneX();
         mouseYpos = e.getSceneY();
         widgetXpos = this.getLayoutX();
@@ -169,11 +188,12 @@ public class AudioComponentWidgetBase extends Pane {
     protected void handleSlider(Object e) {
        AudioComponent ac_ = getAudioComponent();
         // Get the value of the frequency slider
-        int sliderValue = (int) frequencySLider_.getValue();
+        int sliderValue = (int) slider_.getValue();
         // Update the label text with the selected frequency
         frequenceLabel_.setText("SineWave  " + sliderValue + " Hz");
         // Update the slideFrequency field
         ((SineWave) ac_).updateFrequency(sliderValue);
+
     }
 
     protected void closeWidget(ActionEvent e) {
@@ -187,9 +207,11 @@ public class AudioComponentWidgetBase extends Pane {
     public AudioComponent getAudioComponent(){
         return audioComponent_;
     }
-    public Slider getFrequencySlider() {
-        return frequencySLider_;
-    }
+
+
+
+
+
 }
 
 

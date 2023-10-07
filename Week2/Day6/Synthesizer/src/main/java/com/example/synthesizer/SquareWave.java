@@ -4,7 +4,7 @@ import static com.example.synthesizer.AudioClip.TOTAL_SAMPLES;
 import static com.example.synthesizer.AudioClip.duration_;
 
 public class SquareWave implements AudioComponent {
-    private final int frequency_;
+    private int frequency_;
 
     // Constructor to initialize the SquareWave with inputted frequency
     public SquareWave(int frequency) {
@@ -52,4 +52,9 @@ public class SquareWave implements AudioComponent {
     public void connectInput(AudioComponent input) {
         // No inputs for SquareWave, generates wave independently
     }
+
+    public void updateFrequency(int frequency){
+        frequency_= frequency;
+    }
+
 }
