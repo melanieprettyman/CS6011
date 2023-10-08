@@ -1,4 +1,4 @@
-package com.example.synthesizer;
+package com.example.demo;
 
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
@@ -114,7 +114,7 @@ public class AudioComponentWidgetBase extends Pane {
         this.getChildren().add(baseLayout);
 
         //Set position
-        this.setLayoutX(250);
+        this.setLayoutX(50);
         this.setLayoutY(50);
 
     }

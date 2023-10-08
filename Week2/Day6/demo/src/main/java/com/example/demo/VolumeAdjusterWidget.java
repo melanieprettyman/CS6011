@@ -1,4 +1,4 @@
-package com.example.synthesizer;
+package com.example.demo;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
@@ -14,8 +14,7 @@ public class VolumeAdjusterWidget extends AudioComponentWidgetBase {
 
         // Remove the right-side VBox (close button and circle-output). Not needed in this widget
         baseLayout.getChildren().remove(rightSide);
-        baseLayout.getChildren().removeAll(leftSide);
-        baseLayout.getChildren().add(slider_);
+        leftSide.getChildren().removeAll(frequenceLabel_);
 
         // Set the position of this widget
         this.setLayoutX(500);
@@ -26,7 +25,7 @@ public class VolumeAdjusterWidget extends AudioComponentWidgetBase {
         // Apply styles to the label (font family and text color)
         volumeLabel_.setStyle("-fx-font-family: 'Comic Sans MS';-fx-text-fill: #9B55E0");
         // Add the volume label to the left-side VBox of this widget
-        baseLayout.getChildren().add(volumeLabel_);
+        leftSide.getChildren().add(volumeLabel_);
     }
 
     // Override the handleSlider method from the base class

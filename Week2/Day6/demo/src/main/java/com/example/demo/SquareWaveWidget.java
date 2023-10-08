@@ -1,4 +1,4 @@
-package com.example.synthesizer;
+package com.example.demo;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;

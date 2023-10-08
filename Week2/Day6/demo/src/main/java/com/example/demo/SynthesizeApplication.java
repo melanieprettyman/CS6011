@@ -1,16 +1,14 @@
-package com.example.synthesizer;
+package com.example.demo;
 
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -62,14 +60,15 @@ public class SynthesizeApplication extends Application {
      //Create the main content of the application
     private VBox createContent() throws MidiUnavailableException {
         loadChannel();
-        root.setPrefSize(175, 500);
+        root.setPrefSize(175, 600);
 
         // Create NoteView for each note and add them to the layout
         notes.forEach(note -> {
             NoteView view = new NoteView(note);
             root.getChildren().addAll(view);
-            VBox leftPanel = new VBox();
-            leftPanel.getChildren().add(root);
+            root.setStyle("-fx-background-color: #FEE3FF");
+        VBox leftPanel = new VBox();
+        leftPanel.getChildren().add(root);
         });
         return root;
     }
@@ -90,8 +89,8 @@ public class SynthesizeApplication extends Application {
     HBox bottomPanel;
 
 
-    public static ArrayList<AudioComponentWidgetBase> widgets_ = new ArrayList<>();
-    public static ArrayList<AudioComponentWidgetBase> connectedWidgets_ = new ArrayList<>();
+    public static ArrayList<com.example.demo.AudioComponentWidgetBase> widgets_ = new ArrayList<>();
+    public static ArrayList<AudioComponentWidgetBase> connectedWidgets_ = new ArrayList<AudioComponentWidgetBase>();
 
     public static Circle speaker;
 
@@ -149,7 +148,7 @@ public class SynthesizeApplication extends Application {
         //Add buttons to the right panel
         rightPanel.getChildren().addAll(sinewaveButton, squareButton, VFSineWaveButton);
         rightPanel.setPadding(new Insets(5));
-        rightPanel.setSpacing(50);
+        rightPanel.setSpacing(5);
 
         //----------CENTER  PANEL------------------------------------------------------- (Speaker and volume widget)
         //Create center panel
@@ -200,26 +199,36 @@ public class SynthesizeApplication extends Application {
             }
         });
 
+        //PIANO
+
+//        root.setStyle("-fx-background-color: #FEE3FF");
+//        VBox leftPanel = new VBox();
+//        leftPanel.getChildren().add(root);
+
+
         //----------COMBINE-PANELS-----------
         //Add panels to main layout
         mainLayout.setCenter(mainCenter);
         mainLayout.setRight(rightPanel);
         mainLayout.setBottom(bottomPanel);
 
-        //~~~~PIANO~~~~~
-        Group groupScene = new Group (mainLayout,createContent());
-        // Create a scene and set it on the stage
-        Scene scene = new Scene(groupScene, 840, 660);
+        Group groupscene = new Group (mainLayout,createContent());
 
-        // Handle key presses for piano keys
+        //~~~~PIANO~~~~~
+       // mainLayout.setLeft(leftPanel);
+        // Create a scene and set it on the stage
+        Scene scene = new Scene(groupscene, 840, 675);
+        // Enable focus and set focus on the piano
         scene.setOnKeyPressed(e -> onKeyPress(e.getCode()));
 
-        // Enable focus and set focus on the piano
         stage.setScene(scene);
 
 
-
-
+        //~~~~PIANO~~~~
+        // Set focus on the piano keys for key events
+        //root.requestFocus();
+        // Handle key presses for piano keys
+        //root.setOnKeyPressed(e -> onKeyPress(e.getCode()));
 
         stage.show();
     }
@@ -348,7 +357,7 @@ public class SynthesizeApplication extends Application {
     // Custom JavaFX Node for displaying a note with its name
     public static class NoteView extends StackPane {
         private Note note;
-        private Rectangle bg = new Rectangle(172, 46.10, Color.WHITE);
+        private Rectangle bg = new Rectangle(172, 48, Color.WHITE);
 
         NoteView(Note note) {
             this.note = note;
