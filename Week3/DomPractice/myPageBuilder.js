@@ -2,8 +2,8 @@
 
 
 function main() {
-  document.writeln( "<h1> Why are you here?</h1>" );
-  document.writeln( "<p> Really why are you here? This is a completely useless website. </p>" );
+  document.writeln("<h1> Why are you here?</h1>");
+  document.writeln("<p id='main_par'> Really why are you here? This is a completely useless website. </p>");
   document.writeln("<p>Here is the link to a better website:<a href=https://isitchristmas.today/> <3 </a></p>");
   document.writeln("<div id = \"img\"> <caption> Dwayne the Rock Johnson as an egg</caption> <br> </div>");
 
@@ -15,13 +15,69 @@ function main() {
   devImage.setAttribute('height', '150px');
   img.appendChild(devImage);
 
- let myElement = document.body;
+  let myElement = document.body;
   myElement.style.background = "chartreuse";
 
   myElement.style.fontWeight = "bold";
 
   myElement.style.textAlign = "center";
 
+  //Event based programming (HTML)
+  document.writeln("<button id= \"IncButton\"> Increase font size</button>\n")
+  document.writeln("<button id= \"ResetButton\"> Reset </button>\n")
+
+//Event based programming
+  function update_paragraph() {
+    const mainParagraph = document.getElementById('main_par');
+    mainParagraph.style.fontSize = "24px";
+    mainParagraph.style.color = "darkblue";
+    mainParagraph.style.background = "pink";
+
+  }
+
+  function reset_paragraph() {
+    const mainParagraph = document.getElementById('main_par');
+    mainParagraph.style.fontSize = "16px";
+    mainParagraph.style.color = "black";
+    mainParagraph.style.background = "chartreuse";
+
+  }
+
+//option 1
+  const btn1 = document.getElementById("IncButton");
+  btn1.onclick = update_paragraph;
+
+
+//Option 2
+  const btn2 = document.getElementById("ResetButton");
+  btn2.addEventListener("click", reset_paragraph);
+
+
+// //option 3
+//   btn2.onclick = function (){
+//     const mainParagraph = document.getElementById('main_par');
+//     mainParagraph.style.fontSize = "12px";
+//     mainParagraph.style.color = "black";
+//     mainParagraph.style.background = "chartreuse";
+//   }
+
+//option 4 (from html file)
+
+//
+  document.writeln("<div id = \"display_fromserver\"></div>\n");
+ document.writeln("<button onclick = \"load_server();\"> Load from Server </button>");
+
+  function load_server(){
+    let req = new XMLHttpRequest();
+    req.open("GET", "files/LICENSE.txt");
+    req.send();
+
+    req.onload = function (){
+      document.getElementById("display_fromserver").innerHTML = req.responseText;
+
+
+      }
+    }
 
 
 
