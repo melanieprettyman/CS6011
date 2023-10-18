@@ -50,3 +50,41 @@ const strArray = ["poop", "Me Myself & I", "who", "get out"];
 selectionSort(strArray, compareString);
 console.log( strArray);
 
+const peopleArray = [
+  { first: "Dylan", last: "Sprouce" },
+  { first: "Chris", last: "Evans" },
+  { first: "Chris", last: "Hemsworth" },
+  { first: "Kim", last: "Kardashian" },
+  { first: "Chris", last: "Kardashian" }
+]
+
+function compareLastName(a, b){
+  //If personA's last name is lexicographically (alphabetically) less than personB's last name,
+  // returns true. personA should come before personB in the sorted order
+    if (a.last < b.last) {
+      return true;
+    }
+    if (a.last > b.last) {
+      return false;
+    }
+    // If the last names are equal, compare the first names as a tiebreaker
+    return a.first < b.first;
+
+  }
+
+  function compareFirstName(a, b){
+  if (a.first < b.first) {
+    return true;
+  }
+  if (a.first > b.first) {
+    return false;
+  }
+    return a.last < b.last;
+}
+
+selectionSort(peopleArray, compareLastName);
+console.log("Sorted Last Name:", peopleArray);
+
+selectionSort(peopleArray, compareFirstName);
+console.log("Sorted First Name:", peopleArray);
+
