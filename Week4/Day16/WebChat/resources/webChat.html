@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebChat</title>
+  <script defer type="text/javascript" src="webChatJS.js"></script>
+
+  <style>
+    .container{
+      display: flex;
+    }
+    .peopleDiv {
+      height: 400px;
+      width: 400px;
+      border: 5px outset #a100ff;
+      background-color: lightblue;
+      text-align: center;
+    }
+    .chatDiv {
+      height: 400px;
+      width: 800px;
+      border: 5px outset #a100ff;
+      background-color: lightblue;
+      text-align: center;
+    }
+
+
+  </style>
+</head>
+<body>
+
+<div style="text-align: center;"> <h1>WEB CHAT </h1></div>
+<label>User Name:</label>
+<input type="text" id="userName">
+<label>Room Name:</label>
+<input type="text" id="roomName">
+
+<br>
+<br>
+
+<div class = "container">
+<div class="peopleDiv" id="peopleBox">
+  <h><u>People in room</u></h>
+</div>
+<div class="chatDiv" id="chatBox">
+  <h><u>Chat</u></h>
+</div>
+</div>
+
+
+<div id="chat">
+  <div id="chat-messages">
+
+    <form id="chat-form" method="post">
+      <input id="input" type="text" name="message" placeholder="Enter a message..." autocomplete="off">
+      <button id="sendbtn" type="submit">Send</button>
+      <button id="leavebtn">Leave</button>
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
