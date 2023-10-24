@@ -12,7 +12,7 @@ chatBox = document.getElementById("chatBox");
 // Scroll chat box to the bottom
 chatBox.scrollTop = chatBox.scrollHeight;
 
-// WebSocket status flag
+// WebSocket status
 wsOpen = false;
 
 // Event handler for WebSocket open:
@@ -99,8 +99,9 @@ websocket.onmessage = function(event) {
     console.log(message);
   }
   if (data.type === "leave") {
-    let removedPerson = document.getElementById(data.user);
     message.textContent = data.user + ' left the room';
+    chatBox.appendChild(message);
+    let removedPerson = document.getElementById(data.user);
     peopleBox.removeChild(removedPerson);
   }
 
