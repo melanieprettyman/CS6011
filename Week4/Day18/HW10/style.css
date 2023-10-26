@@ -1,0 +1,26 @@
+
+
+body {
+    background-color:chartreuse
+}
+
+h1{
+    font-size: 20 px;
+    color: blueviolet;
+}
+
+p{
+    font-size: 16 px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.unorderedList{
+    font-size: 16 px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.orderedList{
+    font-size: 16 px;
+    font-family: Arial, Helvetica, sans-serif;
+}
