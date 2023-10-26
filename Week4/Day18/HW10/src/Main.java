@@ -8,6 +8,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException{
 
+
         //CREATE SERVER-SOCKET
         // Server-sockets wait for the client (attached to the server)
         ServerSocket server = new ServerSocket(8080);

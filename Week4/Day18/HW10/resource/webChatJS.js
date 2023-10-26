@@ -1,10 +1,10 @@
 
 // Initialize WebSockets
 let ws = "ws://localhost:8080";
+
+console.log("ws has been created");
 // Define the WebSocket server address
 let websocket = new WebSocket(ws);
-
-console.log("web socket created");
 
 // Get DOM elements by their IDs
 roomname = document.getElementById("roomName");
@@ -42,8 +42,9 @@ roomname.addEventListener("keypress", function (e) {
       alert("Your room-name must contain only lowercase letters (and no spaces).");
     } else {
       // If the name is valid, create and send a "join" message to the server
-      const send = "join " + username.value + " " + name;
-      websocket.send(send);
+      let message = {"type":"join", "user":username.value, "room":name}
+
+      websocket.send(JSON.stringify(message));
       // Reset the input field
       roomname.value = "";
     }
@@ -61,10 +62,10 @@ document.getElementById("chat-form").addEventListener("submit", function(event) 
 
   //Pull message from the input field
   let message_element = document.getElementById("input");
-  let message = "message " + message_element.value;
+  let message = {"type":"message", "user":username.value, "room":roomname.value, "message":message_element.value}
 
   // Send the message to the server via WebSocket
-  websocket.send(message);
+  websocket.send(JSON.stringify(message));
   // Clear the input field
   message_element.value = "";
 });
@@ -75,9 +76,9 @@ document.getElementById("chat-form").addEventListener("submit", function(event) 
 // Event listener for the "Leave" button
 // This handles sending a "leave" message to the server
 document.getElementById("leavebtn").addEventListener("click", function(event) {
-  let message = "leave ";
+  let message = {"type":"leave", "user":username.value, "room":roomname.value}
   // Send the "leave" message to the server
-  websocket.send(message);
+  websocket.send(JSON.stringify(message));
 });
 
 //-----------
@@ -86,6 +87,7 @@ document.getElementById("leavebtn").addEventListener("click", function(event) {
 // On-message event handler
 // Receive messages from the server and display them in the chat room
 websocket.onmessage = function(event) {
+  console.log(event.data);
   // Parse the incoming JSON data
   let data = JSON.parse(event.data);
 
