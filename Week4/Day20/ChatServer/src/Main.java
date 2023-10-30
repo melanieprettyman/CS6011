@@ -1,11 +1,7 @@
-import java.awt.*;
-import java.io.*;
+import javax.sound.midi.Soundbank;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.nio.file.Files;
 
 
 
@@ -17,14 +13,19 @@ public class Main {
         //CREATE SERVER-SOCKET
         // Server-sockets wait for the client (attached to the server)
         ServerSocket server = new ServerSocket(8080);
-        String filename = "";
 
         //SOCKET-FOR-WAITING  for the client using .accept (wait forever same as while true)
         while (true) {
-            Socket client = server.accept();
+            try {
+                Socket client = server.accept();
+                MyRunnable runnable = new MyRunnable(client);
 
-        Thread thread = new Thread(new MyRunnable(client));
-        thread.start();
+                Thread thread = new Thread(runnable);
+                thread.start();
+            }
+            catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 }

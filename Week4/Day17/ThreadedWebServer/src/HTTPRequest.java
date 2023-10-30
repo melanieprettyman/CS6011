@@ -14,6 +14,8 @@ public HTTPRequest(Scanner scanner) {
 
 }
 
+
+
 //HANDLE REQUEST
 public static String getRequest(Scanner scanner) {
     String _input = "";

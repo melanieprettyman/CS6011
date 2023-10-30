@@ -1,15 +1,24 @@
+
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
+
+
 public class MyRunnable implements Runnable{
     Socket client_;
     String filename = "";
 
     Boolean masked;
 
-    Room room_ =null;
+    Room room_;
+
+    Boolean shouldAddClient = true;
+
+    public static HashMap<String, String> messageMap = new HashMap<>();
 
 
     MyRunnable(Socket client){
@@ -36,6 +45,8 @@ public class MyRunnable implements Runnable{
         //Opening the file
         //relative path, bc its using current director, don't need '/', if included, won't find file
         File file = new File("src" + filename);
+        // TODO:
+        // FIXME:
         File failfile = new File("/Users/melanieprettyman/Desktop/MSD/CS6011/CS6011/Week1/Day4/MyHttpServer/src/failMessage.html");
 
 
@@ -59,7 +70,7 @@ public class MyRunnable implements Runnable{
             try {
                 while(true) {
                     String message = handleIncommingWebSocketMessages();
-                    handleOutgoingWebSocketMessages(message);
+                    room_.sendMessageToRoom(message);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -123,53 +134,80 @@ public class MyRunnable implements Runnable{
                 //DECODE PAYLOAD
                     //decoding the payload array using the UTF-8 character encoding.
                     String message = new String(payload, StandardCharsets.UTF_8);
-                    System.out.println(message);
+        //-----------
+        //ROOM-LOGIC
+        //-----------
 
+               //CREATE ROOM
+               String roomName = extractRoomName(message);
+               room_ = Room.getRoom(roomName);
+               //LISTEN FOR USERS JOINING AND LEAVING ROOM
+               handleClients(message);
+               //ADD MSG TO MSG-LOG
+                // Check if the message is already in the message history
+               if (!room_.messageHistory.contains(message)) {
+                   // If the message is not in the message history, add it
+                   room_.addMessage(message);
+                   return message; // Return the message for further processing
+               } else {
+                   return null; // Skip sending the already processed message
+               }
+   }
+    public static String extractRoomName(String jsonMessage) {
+        String roomName = "";
+        String roomname = jsonMessage.split("\"room\":\"") [ 1 ];
+        roomName = roomname.split( "\"" ) [ 0 ];
+        return roomName;
+    }
+    public synchronized void handleClients(String message_) throws IOException {
+        String message = message_;
 
-                    return message;
+        // Step 1: Remove the curly braces from the JSON string
+        String jsonContent = message.substring(1, message.length() - 1);
 
+        // Step 2: Split the JSON content into key-value pairs
+        String[] keyValuePairs = jsonContent.split(",");
 
+        for (String pair : keyValuePairs) {
+            // Split each key-value pair into separate strings for key and value
+            String[] keyValue = pair.split(":");
+            String key = keyValue[0].replaceAll("\"", "").trim(); // Extract and clean the key
+            String value = keyValue[1].replaceAll("\"", "").trim(); // Extract and clean the value
+
+            // Store the extracted key-value pair in a map for reference
+            messageMap.put(key, value);
+
+            // Check if the received message indicates a client joining the room
+            if (key.equals("type") && value.equals("join")) {
+                // If the client is not already in the room, add it and send message history
+                if (!room_.clientList.contains(client_)) {
+                    room_.addClient(client_);
+
+                    // Send message history to the new client
+                    for (String historyMessage : room_.messageHistory) {
+                        room_.sendMessageToClient(historyMessage, client_);
+                    }
+
+                    // Mark that the client has been added to the room
+                    shouldAddClient = false;
+                }
+            }
+
+            // Check if the received message indicates a client leaving the room
+            if (key.equals("type") && value.equals("leave")) {
+                room_.removeClient(client_);
+            }
+
+            // Send message history to the new client if not previously added to the room
+            if (shouldAddClient) {
+                for (String historyMessage : room_.messageHistory) {
+                    room_.sendMessageToRoom(historyMessage);
+                }
+            }
         }
-    public synchronized void handleOutgoingWebSocketMessages(String message) throws IOException {
-        OutputStream outputStream = client_.getOutputStream();
-        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-
-        // Convert the message to bytes
-        String responseMessage = message;
-        byte[] responseBytes = responseMessage.getBytes(StandardCharsets.UTF_8);
-
-        //Send opcode
-        dataOutputStream.writeByte(0x81); // FIN bit set, opcode for text frame
-
-        //Send payload length
-            //If msg length is less than 126
-            if (responseBytes.length < 126) {
-                //Put actual length in B1
-                dataOutputStream.writeByte(responseBytes.length);
-            }
-            //If larger than 125, then needs to send the data len over B2-B3 (2 bytes, power 16 bits)
-            else if(responseBytes.length< Math.pow(2,16)){
-                //Put 126 in B1 to let it know to use the next two bytes
-                dataOutputStream.write(126);
-                //Write to next two bytes
-                dataOutputStream.writeShort(responseBytes.length);
-            }
-            else{
-                //Else largest size, send message size as 127 in B1
-                dataOutputStream.write(127);
-                //Write to next B2-B9 btyes
-                dataOutputStream.writeLong(responseBytes.length);
-            }
-
-        // Write the message bytes (Send Payload)
-        dataOutputStream.write(responseBytes);
-
-        // Flush the output stream to ensure the message is sent
-        dataOutputStream.flush();
-
-
     }
-    }
+}
+
 
 
 
