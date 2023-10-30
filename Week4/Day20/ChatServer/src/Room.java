@@ -57,23 +57,19 @@ public class Room {
 
     //Send message to every client in the room
     public synchronized void sendMessageToRoom(String message) throws IOException {
-        System.out.println("@sendMessageToRoom Message being sent: " + message);
         for (Socket client : clientList) {
-            OutputStream outputStream = client.getOutputStream();
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-            constructMsg(message, dataOutputStream);
+            constructMsg(message, client);
         }
     }
 
     //Send message to only one client
     public synchronized void sendMessageToClient(String message, Socket client) throws IOException {
-        OutputStream outputStream = client.getOutputStream();
-        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-        constructMsg(message, dataOutputStream);
-
+        constructMsg(message, client);
     }
 
-    private synchronized void constructMsg(String message, DataOutputStream dataOutputStream) throws IOException {
+    private synchronized void constructMsg(String message, Socket client) throws IOException {
+        OutputStream outputStream = client.getOutputStream();
+        DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
         // Convert the message to bytes
         byte[] responseBytes = message.getBytes(StandardCharsets.UTF_8);
 
