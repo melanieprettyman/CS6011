@@ -9,7 +9,6 @@ public class MyRunnable implements Runnable{
 
     Boolean masked;
 
-    Room room_ =null;
 
 
     MyRunnable(Socket client){
