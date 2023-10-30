@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
-
+/**
+ * This class represents a thread that manages client connections and communication in the server.
+ */
 public class MyRunnable implements Runnable{
     Socket client_;
     String filename = "";
@@ -18,14 +20,17 @@ public class MyRunnable implements Runnable{
 
     Boolean shouldAddClient = true;
 
-    public static HashMap<String, String> messageMap = new HashMap<>();
+    private static HashMap<String, String> messageMap = new HashMap<>();
 
-
+    /**
+     * Run method that reads client input and manages WebSocket communication.
+     */
     MyRunnable(Socket client){
         client_ = client;
     }
     @Override
     public void run() {
+
         //Reading input from the client, wrap in scanner stream
         Scanner scanner = null;
         try {
@@ -38,15 +43,10 @@ public class MyRunnable implements Runnable{
         //HTTPequest class
         HTTPRequest httpRequest = new HTTPRequest(scanner);
         httpRequest.getRequest(scanner);
-
-//        filename = httpRequest._filename;
-
         filename = httpRequest.getFileName();
+
         //Opening the file
-        //relative path, bc its using current director, don't need '/', if included, won't find file
         File file = new File("src" + filename);
-        // TODO:
-        // FIXME:
         File failfile = new File("/Users/melanieprettyman/Desktop/MSD/CS6011/CS6011/Week1/Day4/MyHttpServer/src/failMessage.html");
 
 
@@ -65,10 +65,11 @@ public class MyRunnable implements Runnable{
             throw new RuntimeException(e);
         }
 
-        // If WS, WS-Communication
+        // If WS, switch to WS-Communication
         if (httpRequest.requestWebSocket) {
             try {
                 while(true) {
+                    //Transmit incoming WS message into a string
                     String message = handleIncommingWebSocketMessages();
                     room_.sendMessageToRoom(message);
                 }
@@ -76,10 +77,9 @@ public class MyRunnable implements Runnable{
                 throw new RuntimeException(e);
             }
         }
-
     }
 
-   public String handleIncommingWebSocketMessages() throws IOException {
+   private String handleIncommingWebSocketMessages() throws IOException {
             //Wrap input-stream in data-input-stream to read in groups of bytes
             InputStream is = client_.getInputStream();
             DataInputStream ds = new DataInputStream(is);
@@ -153,19 +153,23 @@ public class MyRunnable implements Runnable{
                    return null; // Skip sending the already processed message
                }
    }
-    public static String extractRoomName(String jsonMessage) {
+
+   //Parse the message to extract the room-name
+    private static String extractRoomName(String jsonMessage) {
         String roomName = "";
         String roomname = jsonMessage.split("\"room\":\"") [ 1 ];
         roomName = roomname.split( "\"" ) [ 0 ];
         return roomName;
     }
-    public synchronized void handleClients(String message_) throws IOException {
+
+    //LISTEN FOR USERS JOINING AND LEAVING ROOM
+    private synchronized void handleClients(String message_) throws IOException {
         String message = message_;
 
-        // Step 1: Remove the curly braces from the JSON string
+        // Remove the curly braces from the JSON string
         String jsonContent = message.substring(1, message.length() - 1);
 
-        // Step 2: Split the JSON content into key-value pairs
+        // Split the JSON content into key-value pairs
         String[] keyValuePairs = jsonContent.split(",");
 
         for (String pair : keyValuePairs) {
@@ -174,13 +178,13 @@ public class MyRunnable implements Runnable{
             String key = keyValue[0].replaceAll("\"", "").trim(); // Extract and clean the key
             String value = keyValue[1].replaceAll("\"", "").trim(); // Extract and clean the value
 
-            // Store the extracted key-value pair in a map for reference
-            messageMap.put(key, value);
+//            // Store the extracted key-value pair in a map for reference
+//            messageMap.put(key, value);
 
             // Check if the received message indicates a client joining the room
             if (key.equals("type") && value.equals("join")) {
                 // If the client is not already in the room, add it and send message history
-                if (!room_.clientList.contains(client_)) {
+                if (!room_.getClientList().contains(client_)) {
                     room_.addClient(client_);
 
                     // Send message history to the new client
@@ -195,7 +199,7 @@ public class MyRunnable implements Runnable{
 
             // Check if the received message indicates a client leaving the room
             if (key.equals("type") && value.equals("leave")) {
-                room_.removeClient(client_);
+                room_.removeClient(client_); //remove the client from the client list
             }
 
             // Send message history to the new client if not previously added to the room

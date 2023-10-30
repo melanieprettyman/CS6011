@@ -87,6 +87,8 @@ document.getElementById("leavebtn").addEventListener("click", function(event) {
 // On-message event handler
 // Receive messages from the server and display them in the chat room
 websocket.onmessage = function(event) {
+
+
   console.log(event.data);
   // Parse the incoming JSON data
   let data = JSON.parse(event.data);
@@ -101,7 +103,13 @@ websocket.onmessage = function(event) {
   }
   if (data.type === "message") {
     message.textContent = data.user + ': ' + data.message;
-    console.log(message);
+
+    const timestamp=getCurrentTimestamp();
+    let timeText = document.createElement('span');
+    timeText.textContent = `[${timestamp}] `;
+    timeText.classList.add('timestamp');
+    chatBox.appendChild(timeText);
+
   }
   if (data.type === "leave") {
     message.textContent = data.user + ' left the room';
@@ -114,3 +122,12 @@ websocket.onmessage = function(event) {
   peopleBox.appendChild(joinMsg);
   chatBox.appendChild(message);
 };
+
+
+function getCurrentTimestamp() {
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const seconds = now.getSeconds().toString().padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+}
