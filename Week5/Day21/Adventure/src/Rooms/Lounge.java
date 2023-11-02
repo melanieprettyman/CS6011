@@ -13,7 +13,7 @@ public class Lounge extends Room {
     public Lounge() {
         super("Lounge", "A small, dark room.");
 
-        Item dave = new Item("Dave", "A petrified professor. To use type 'release Dave'");
+        Item dave = new Item("Dav", "A petrified professor. To use type 'release Dav'");
         items_.add(dave);
     }
     @Override
@@ -57,7 +57,7 @@ public class Lounge extends Room {
                 locked_ = false;
             }
             else {
-                System.out.println( "You don't have a key card. you are stuck in the lounge." );
+                System.out.println( "You don't have a key card. You are stuck in the lounge." );
             }
             return true;
         }
