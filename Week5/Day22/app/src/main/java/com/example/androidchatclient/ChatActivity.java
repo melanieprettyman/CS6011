@@ -21,17 +21,16 @@ import java.util.ArrayList;
 
 public class ChatActivity extends AppCompatActivity {
     private EditText editText;
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> myAdapter;
+    private ArrayAdapter<String> theirAdapter;
+
     private ArrayList<String> messageList;
     String message;
     ListView messagesListView;
     public static String roomName = "DNG room name";
     public static String userName = "DNG username";
-
     private static final String WS_URL = "ws://10.0.2.2:8080/endpoint";
-    //private MyWebsocket myWS;
-   private WebSocket ws;
-
+    private WebSocket ws;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +57,20 @@ public class ChatActivity extends AppCompatActivity {
         messageList = new ArrayList<>();
 
         //Create an Adapter that will help the ListView display the messages on the my_message chat bubble, from message list
-        adapter = new ArrayAdapter<>(this, R.layout.my_message, R.id.message_body, messageList);
+        myAdapter = new ArrayAdapter<>(this, R.layout.my_message, R.id.message_body, messageList);
+        theirAdapter = new ArrayAdapter<>(this, R.layout.their_message, R.id.message_body, messageList);
 
         //Attach the adapter to the ListView
-        messagesListView.setAdapter(adapter);
+        messagesListView.setAdapter(myAdapter);
+        messagesListView.smoothScrollToPosition(myAdapter.getCount());
 
 
-       // Initialize WebSocket
+        // Initialize WebSocket
        //if this was in the UI thread, it would lock up the thread. saying Asynchronously--the ws library creates a ws thread w.in
         try {
             ws = new WebSocketFactory().createSocket(WS_URL);
             //listen for event and will use our MyWebSocket class to implement them
-            ws.addListener(new MyWebsocket(messageList,adapter, messagesListView));
+            ws.addListener(new MyWebsocket(messageList,myAdapter,theirAdapter, messagesListView, this));
             ws.connectAsynchronously();
 
         } catch (IOException e) {
@@ -79,7 +80,9 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    //When send button is clicked, call sendMessage
     public void sendMessage(View view) {
+
         JSONObject JSONMsg = new JSONObject();
         message = editText.getText().toString();
         try {
@@ -91,12 +94,15 @@ public class ChatActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         editText.getText().clear();
+
         if (!message.isEmpty()) {
             ws.sendText(String.valueOf(JSONMsg));
         }
         Log.d("chatactivity", "msg was sent");
 
     }
+
+
 }
 
 
