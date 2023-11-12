@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
             EditText room_name = findViewById(R.id.roomname);
 
 
-            //on second click grab info from first act. then start new activtiy
                 String userName = user_name.getText().toString();
                 String roomName = room_name.getText().toString();
 

@@ -42,8 +42,8 @@ public class ChatActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            roomName = extras.getString(MainActivity.RoomNameKey);
-            userName = extras.getString(MainActivity.UserNameKey);
+             roomName = extras.getString(MainActivity.RoomNameKey);
+             userName = extras.getString(MainActivity.UserNameKey);
 
         }
         text.setText("Room: " + roomName);
@@ -101,6 +101,25 @@ public class ChatActivity extends AppCompatActivity {
         Log.d("chatactivity", "msg was sent");
 
     }
+
+    public void handleLeave(View view){
+        // Creating a JSON object to represent the leave message
+        JSONObject leaveMessage = new JSONObject();
+        try {
+            leaveMessage.put("type", "leave");
+            leaveMessage.put("user", userName);
+            leaveMessage.put("room", roomName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Sending the "leave" message to the server using WebSocket
+        if (ws != null) {
+            ws.sendText(String.valueOf(leaveMessage));
+        }
+    }
+
+
 
 
 }
