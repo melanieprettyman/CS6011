@@ -65,8 +65,10 @@ function animateImage() {
 
   // If a collision occurs, show the end screen; otherwise, request the next frame for animation
   if (collision) {
+    stopTimer(); // Stop the timer when collision occurs
     endScreen();
   } else {
+    updateTimer(); // Update the timer within the game loop
     window.requestAnimationFrame(animateImage);
   }
 }
@@ -99,6 +101,34 @@ document.onmousemove = handleHoneyPot;
 function endScreen() {
   context.fillStyle = "black";
   context.font = "50px Arial";
-  //context.fillText("Game Over", (canvasW / 2) - 150, 100);
-  //context.fillText("Reload the page to play again!", (canvasW / 2) - 300, 150);
+  context.fillText("Game Over", (canvasW / 2) - 150, 100);
+  context.fillText("Reload the page to play again!", (canvasW / 2) - 300, 150);
+}
+
+let timerInterval;
+let totalSeconds = 0;
+let secondsLabel = document.getElementById("seconds");
+let minutesLabel = document.getElementById("minutes");
+
+function startTimer() {
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+  totalSeconds++;
+  secondsLabel.innerHTML = pad(totalSeconds % 60);
+  minutesLabel.innerHTML = pad(parseInt(totalSeconds / 60));
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function pad(val) {
+  const valString = val + "";
+  if (valString.length < 2) {
+    return "0" + valString;
+  } else {
+    return valString;
+  }
 }

@@ -28,3 +28,12 @@
   transform: rotateY(-180deg);
   transition: .7s;
 }
+.timer {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  color: #000; /* Change the text color to black */
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
