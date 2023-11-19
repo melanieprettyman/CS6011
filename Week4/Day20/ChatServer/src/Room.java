@@ -59,6 +59,7 @@ public class Room {
     public synchronized void sendMessageToRoom(String message) throws IOException {
         for (Socket client : clientList) {
             constructMsg(message, client);
+            System.out.println("@sendMessageToRoom sending the following message: " +message);
         }
     }
 

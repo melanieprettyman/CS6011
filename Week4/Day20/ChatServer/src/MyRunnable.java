@@ -85,7 +85,7 @@ public class MyRunnable implements Runnable{
             DataInputStream ds = new DataInputStream(is);
 
                 //Read in first two bytes
-                byte zeroByte = ds.readByte();
+                byte zeroByte = ds.  readByte();
                 byte firstByte = ds.readByte();
 
                 //PARSE FOR MASK AND LENGTH
@@ -134,10 +134,21 @@ public class MyRunnable implements Runnable{
                 //DECODE PAYLOAD
                     //decoding the payload array using the UTF-8 character encoding.
                     String message = new String(payload, StandardCharsets.UTF_8);
+       System.out.println("Android msg: " + message);
         //-----------
         //ROOM-LOGIC
         //-----------
 
+       // message could be: join dav roomname, leave, message <the msg>
+
+       /// if message starts with join:
+       //       create/get the room, etc
+       // else if message starts with leave (actually the whole msg is leave"
+       //       handle removing user from room
+       // else if message starts with "message"
+       //      send the msg to everyone in the room
+       // else
+       //      log an error that we don't know how to handle message
                //CREATE ROOM
                String roomName = extractRoomName(message);
                room_ = Room.getRoom(roomName);

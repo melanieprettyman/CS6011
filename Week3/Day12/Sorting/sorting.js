@@ -82,8 +82,8 @@ function compareLastName(a, b){
     return a.last < b.last;
 }
 
-selectionSort(peopleArray, compareLastName);
-console.log("Sorted Last Name:", peopleArray);
+// selectionSort(peopleArray, compareLastName);
+// console.log("Sorted Last Name:", peopleArray);
 
 selectionSort(peopleArray, compareFirstName);
 console.log("Sorted First Name:", peopleArray);

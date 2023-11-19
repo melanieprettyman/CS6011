@@ -9,6 +9,7 @@ public class VolumeAdjuster implements AudioComponent{
         volumeScale_ = volumeScale;
     }
 
+
     //get a clip from their input and modify it somehow and return the updated clip
     @Override
     public AudioClip getClip() {
