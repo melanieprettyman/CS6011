@@ -3,6 +3,8 @@
 
 "Not the Bees" is an interactive web-based game built with JavaScript, HTML, and CSS. In this game, players control a honey pot and navigate through a swarm of bees while attempting to avoid collisions. The game features an animated hive, interactive movement controls, and a timer to track gameplay duration. Players can challenge themselves to beat their best time and restart the game for another attempt.
 
+Website: https://notthebees.tiiny.site/
+
 
 
 ## Game Play
