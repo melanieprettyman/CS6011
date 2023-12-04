@@ -177,11 +177,5 @@ To install and run the Not The Bees, follow these steps:
 | ---------------- | ---------- | ---------------------------------- |
 | `onmousemove`    | `MouseEvent`| Handles mouse movement to update honey pot position. |
 
-## Acknowledgements
-
-The Synthesizer Application was created by Melanie Prettyman and was developed as part of CS 6011. We would like to thank the following resources and libraries that contributed to the project's development:
-- **JavaFX** for the graphical user interface.
-- **Java Sound API** for audio generation and playback.
-
-We also appreciate the guidance and support provided by Professor Nabil Makarem throughout the project.
+ 
 
